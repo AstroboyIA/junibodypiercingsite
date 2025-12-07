@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto - {{ produto.nome }}</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-brand-gray text-white">
+<div class="container mx-auto p-8">
+
+    <!-- Cabeçalho -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-4xl font-serif text-brand-gold mb-2">Editar Produto</h1>
+            <p class="text-gray-400">{{ produto.nome }}</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="{{ url_for('admin') }}"
+               class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors">
+                ← Voltar
+            </a>
+            <a href="{{ url_for('logout') }}"
+               class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors">
+                🚪 Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensagens -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="mb-6 p-4 rounded {% if category == 'error' %}bg-red-900 text-red-200{% else %}bg-green-900 text-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- Preview do produto atual -->
+    <div class="bg-brand-dark p-6 rounded-lg mb-8 flex items-center gap-6">
+        <img src="{{ url_for('static', filename=produto.imagem_url) }}"
+             alt="{{ produto.nome }}"
+             class="w-32 h-32 object-cover rounded-lg"
+             onerror="this.src='https://via.placeholder.com/150?text=Sem+Imagem'">
+        <div>
+            <h3 class="text-2xl font-bold text-white mb-2">{{ produto.nome }}</h3>
+            <p class="text-gray-400 mb-2">{{ produto.descricao[:100] }}...</p>
+            <div class="flex gap-4 text-sm">
+                <span class="text-brand-gold">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                <span class="text-gray-400">Estoque: {{ produto.estoque }}</span>
+                <span class="text-gray-400">{{ produto.tipo }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Edição -->
+    <form method="POST" class="bg-brand-dark p-6 rounded-lg">
+        <h2 class="text-2xl font-bold text-brand-gold mb-6">Dados do Produto</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-gray-400 mb-2 text-sm">Nome do Produto *</label>
+                <input type="text"
+                       name="nome"
+                       value="{{ produto.nome }}"
+                       placeholder="Ex: Piercing Hélix Ouro 18k"
+                       required
+                       class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            </div>
+
+            <div>
+                <label class="block text-gray-400 mb-2 text-sm">Preço (R$) *</label>
+                <input type="number"
+                       name="preco"
+                       value="{{ produto.preco }}"
+                       placeholder="Ex: 150.00"
+                       step="0.01"
+                       min="0.01"
+                       required
+                       class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            </div>
+
+            <div>
+                <label class="block text-gray-400 mb-2 text-sm">Tipo/Material *</label>
+                <input type="text"
+                       name="tipo"
+                       value="{{ produto.tipo }}"
+                       placeholder="Ex: 18K Gold, Titânio, Zircônia"
+                       required
+                       class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            </div>
+
+            <div>
+                <label class="block text-gray-400 mb-2 text-sm">Estoque (unidades) *</label>
+                <input type="number"
+                       name="estoque"
+                       value="{{ produto.estoque }}"
+                       placeholder="Ex: 10"
+                       min="0"
+                       required
+                       class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-400 mb-2 text-sm">Caminho da Imagem *</label>
+            <input type="text"
+                   name="imagem_url"
+                   value="{{ produto.imagem_url }}"
+                   placeholder="Ex: images/produtos/piercing-helix.jpg"
+                   required
+                   class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            <p class="text-xs text-gray-500 mt-1">Caminho relativo à pasta static/</p>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-gray-400 mb-2 text-sm">Descrição Detalhada *</label>
+            <textarea name="descricao"
+                      placeholder="Descreva o produto: material, características, tamanho, etc."
+                      required
+                      rows="4"
+                      class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">{{ produto.descricao }}</textarea>
+        </div>
+
+        <div class="flex gap-4">
+            <button type="submit"
+                    class="bg-brand-gold text-brand-dark font-bold py-3 px-8 rounded hover:bg-yellow-600 transition-colors">
+                💾 Salvar Alterações
+            </button>
+
+            <a href="{{ url_for('admin') }}"
+               class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded transition-colors inline-block text-center">
+                Cancelar
+            </a>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

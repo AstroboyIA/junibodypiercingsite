@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Administração</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-brand-gray text-white">
+<div class="container mx-auto p-8">
+    <!-- Cabeçalho com botão de sair -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-serif text-brand-gold">Painel de Administração de Produtos</h1>
+        <a href="{{ url_for('logout') }}"
+           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors">
+            🚪 Sair
+        </a>
+    </div>
+
+    <!-- Mensagens de sucesso/erro -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="mb-4 p-4 rounded {% if category == 'error' %}bg-red-900 text-red-200{% else %}bg-green-900 text-green-200{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- Formulário -->
+    <h2 class="text-2xl mb-4">Adicionar Novo Produto</h2>
+    <form method="POST" action="{{ url_for('admin') }}" class="bg-brand-dark p-6 rounded-lg mb-12">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <input type="text" name="nome" placeholder="Nome do Produto" required
+                   class="p-3 rounded bg-gray-700 text-white border-none">
+            <input type="number" name="preco" placeholder="Preço (ex: 150.00)" step="0.01" required
+                   class="p-3 rounded bg-gray-700 text-white border-none">
+            <select name="categoria" required class="p-3 rounded bg-gray-700 text-white border-none">
+                <option value="">Selecione a Categoria</option>
+                <option value="ouro">Ouro 18K</option>
+                <option value="titanio">Titânio</option>
+                <option value="zirconia">Zircônia</option>
+            </select>
+            <input type="text" name="tipo" placeholder="Tipo (ex: 18K Gold)" required
+                   class="p-3 rounded bg-gray-700 text-white border-none">
+            <input type="text" name="imagem_url" placeholder="Caminho da Imagem (ex: images/anel.jpg)" required
+                   class="p-3 rounded bg-gray-700 text-white border-none">
+            <input type="number" name="estoque" placeholder="Estoque" required
+                   class="p-3 rounded bg-gray-700 text-white border-none">
+        </div>
+        <textarea name="descricao" placeholder="Descrição Detalhada" required
+                  class="w-full p-3 rounded bg-gray-700 text-white border-none mb-4"></textarea>
+
+        <button type="submit"
+                class="bg-brand-gold text-brand-dark font-bold py-3 px-6 rounded hover:bg-yellow-600 transition-colors">
+            Adicionar Produto
+        </button>
+    </form>
+
+    <!-- Lista de produtos -->
+    <h2 class="text-2xl mb-4">Produtos Atuais ({{ produtos | length }})</h2>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-brand-dark rounded-lg">
+            <thead>
+            <tr class="text-left text-brand-gold border-b border-white/10">
+                <th class="p-4">ID</th>
+                <th class="p-4">Nome</th>
+                <th class="p-4">Preço</th>
+                <th class="p-4">Tipo</th>
+                <th class="p-4">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for produto in produtos %}
+            <tr class="border-b border-white/5">
+                <td class="p-4">{{ produto.id }}</td>
+                <td class="p-4">{{ produto.nome }}</td>
+                <td class="p-4">R$ {{ "%.2f"|format(produto.preco) }}</td>
+                <td class="p-4">{{ produto.tipo }}</td>
+                <td class="p-4">
+                    <a href="{{ url_for('editar_produto', id=produto.id) }}"
+                       class="text-blue-400 hover:text-blue-300 mr-3 inline-block">✏️ Editar
+                    </a>
+
+                    <form method="POST"
+                          action="{{ url_for('excluir_produto', id=produto.id) }}"
+                          style="display:incline;"
+                          onsubmit="retunr confirm('⚠️ Tem certeza que deseja excluir \" {{ produto.nome }}\
+                    "? Esta ação não pode ser desfeita!');">
+                    <button type="submit"
+                            class="text-red-400 hover:text-red-300">
+                        🗑️ Excluir
+                    </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

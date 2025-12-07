@@ -1,0 +1,49 @@
+/*
+  Este arquivo contém estilos personalizados que complementam o Tailwind CSS.
+  Inclui gradientes, animações e outros efeitos visuais específicos do projeto.
+*/
+
+/* Estilo para o gradiente de texto dourado */
+.gold-gradient-text {
+    background: linear-gradient(to right, #f3e5ab, #d4af37, #f3e5ab);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    animation: shine 5s infinite linear;
+}
+
+@keyframes shine {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Efeito "glass" para a barra de navegação ao rolar a página */
+.glass-nav {
+    background-color: rgba(15, 15, 15, 0.7); /* Cor de fundo com transparência */
+    backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-width: 1px;
+    border-color: rgba(212, 175, 55, 0.2); /* Borda sutil com a cor dourada */
+    padding-top: 0.5rem; /* Reduz o padding vertical */
+    padding-bottom: 0.5rem;
+}
+
+/*
+  Animação de "revelar" para elementos ao entrarem na tela.
+  Inicialmente, os elementos ficam invisíveis e levemente deslocados.
+*/
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+/*
+  Quando a classe 'active' é adicionada (via JavaScript),
+  o elemento se torna visível e volta à sua posição original, criando o efeito.
+*/
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
