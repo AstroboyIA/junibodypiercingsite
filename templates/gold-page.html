@@ -101,10 +101,8 @@
                                  class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                  onerror="this.src='https://images.pexels.com/photos/10115333/pexels-photo-10115333.jpeg?auto=compress&cs=tinysrgb&w=400'">
 
-                            <!-- Overlay Gradiente -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
-                            <!-- Badge de Estoque -->
                             {% if produto.estoque > 0 %}
                             <div class="absolute top-4 right-4 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                                 Em Estoque
@@ -115,7 +113,6 @@
                             </div>
                             {% endif %}
 
-                            <!-- Informações do Produto -->
                             <div class="absolute bottom-0 left-0 p-6 z-10 w-full">
                                 <h3 class="text-xl font-serif text-white mb-2">{{ produto.nome }}</h3>
                                 <p class="text-gray-300 text-sm mb-3">{{ produto.tipo }}</p>
@@ -126,7 +123,6 @@
                             </div>
                         </div>
 
-                        <!-- Detalhes ao Hover -->
                         <div class="p-4 bg-brand-dark">
                             <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ produto.descricao }}</p>
                             <a href="https://api.whatsapp.com/send?phone=5581987602868&text=Olá! Tenho interesse no produto: {{ produto.nome }} (R$ {{ '%.2f'|format(produto.preco) }})"
@@ -139,7 +135,6 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <!-- Mensagem quando não há produtos -->
                 <div class="text-center py-20">
                     <div class="text-6xl mb-4">✨</div>
                     <h3 class="text-2xl font-serif text-white mb-4">Em Breve</h3>

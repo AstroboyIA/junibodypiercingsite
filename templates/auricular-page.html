@@ -95,7 +95,6 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Card 1: Ouro -->
                 <a href="{{ url_for('gold') }}" class="block group">
                     <div class="group relative overflow-hidden rounded-lg cursor-pointer reveal">
                         <img src="{{ url_for('static', filename='images/projeto-auricular-ouro-aleatorio.jpg') }}"
@@ -109,7 +108,6 @@
                     </div>
                 </a>
 
-                <!-- Card 2: Titânio -->
                 <a href="{{ url_for('prata') }}" class="block group">
                     <div class="group relative overflow-hidden rounded-lg cursor-pointer reveal"
                          style="transition-delay: 100ms;">
@@ -124,7 +122,6 @@
                     </div>
                 </a>
 
-                <!-- Card 3: Zircônia -->
                 <a href="{{ url_for('zirconia') }}" class="block group">
                     <div class="group relative overflow-hidden rounded-lg cursor-pointer reveal"
                          style="transition-delay: 200ms;">
@@ -167,7 +164,6 @@
                 </div>
             </div>
 
-            <!-- Links Rápidos -->
             <div>
                 <h4 class="text-brand-gold font-bold uppercase tracking-widest mb-6">Menu</h4>
                 <ul class="space-y-3 text-gray-400">
@@ -178,7 +174,6 @@
                 </ul>
             </div>
 
-            <!-- Contato -->
             <div>
                 <h4 class="text-brand-gold font-bold uppercase tracking-widest mb-6">Contato</h4>
                 <ul class="space-y-4 text-gray-400">
@@ -215,7 +210,6 @@
     </div>
 </footer>
 
-<!-- Botão Flutuante WhatsApp -->
 <a href="https://api.whatsapp.com/send?phone=5581987602868&text=Ol%C3%A1!%20Tudo%20bem?%20Tenho%20interesse%20em%20fazer%20um%20piercing,%20voc%C3%AA%20pode%20me%20passar%20o%20or%C3%A7amento?%20Obrigado(a)&fbclid=PAT01DUAOf4TNleHRuA2FlbQIxMABzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacDWCeYy9dvhEFZvANJmAWCN1oIj0TDbXylvVMACLgHSzYTg4cWSqRrGEgLuQ_aem_6g6THTKyc022sB-IocUpTg"
    target="_bank" aria-label="Agende seu horário pelo WhatsApp"
    class="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-500 hover:scale-110 transition-all z-50 flex items-center gap-2 group">
@@ -223,13 +217,11 @@
     <i data-lucide="message-circle" class="w-6 h-6"></i>
 </a>
 
-<!-- Botão Voltar ao Topo -->
 <button id="back-to-top-btn" aria-label="Voltar ao topo"
         class="fixed bottom-24 right-6 bg-brand-gold text-brand-dark p-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-40 hover:bg-white">
     <i data-lucide="arrow-up" class="w-5 h-5"></i>
 </button>
 
-<!-- Ícones (Lucide) -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
