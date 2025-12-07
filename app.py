@@ -212,4 +212,4 @@ with app.app_context():
     #app.run(debug=os.getenv('DEBUG', 'False') == 'True')#
 
 if __name__ == '__main__':
-    pass
+    app.run(debug=os.getenv('DEBUG', 'False') == 'True')
