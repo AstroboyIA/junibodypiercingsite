@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -47,6 +48,32 @@ class Produto(db.Model):
 
     def __repr__(self):
         return f"Produto('{self.nome}', '{self.preco}')"
+
+class Pedido(db.Model):
+    __tablename__ = 'pedido'
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    data_pedido = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(50), nullable=False, default='Pendente')
+    total = db.Column(db.Float, nullable=False)
+
+    itens = db.Relationship('ItemPedido', backref='pedido', lazy=True)
+
+    def __repr__(self):
+        return f"Pedido('{self.id}', '{self.data_pedido}', '{self.status}')"
+
+class ItemPedido(db.Model):
+    __tablename__ = 'item_pedido'
+    id = db.Column(db.Integer, primary_key=True)
+    pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'), nullable=False)
+    produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), nullable=False)
+    quantidade = db.Column(db.Integer, nullable=False)
+    preco_unitario = db.Column(db.Float, nullable=False)
+
+    produto = db.Relationship('Produto')
+
+    def __repr__(self):
+        return f"ItemPedido('{self.pedido_id}', '{self.produto_id}', '{self.quantidade}')"
 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
