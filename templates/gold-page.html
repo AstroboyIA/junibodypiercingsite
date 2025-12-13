@@ -96,7 +96,7 @@
                     <div class="group relative overflow-hidden rounded-lg cursor-pointer reveal bg-brand-dark border border-white/5 hover:border-brand-gold/50 transition-all">
                         <!-- Imagem do Produto -->
                         <div class="relative h-80 overflow-hidden">
-                            <img src="{{ url_for('static', filename=produto.imagem_url) }}"
+                            <img src="{% if produto.imagem_url.startswith('http') %}{{ produto.imagem_url }}{% else %}{{ url_for('static', filename=produto.imagem_url) }}{% endif %}"
                                  alt="{{ produto.nome }}"
                                  class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                  onerror="this.src='https://images.pexels.com/photos/10115333/pexels-photo-10115333.jpeg?auto=compress&cs=tinysrgb&w=400'">

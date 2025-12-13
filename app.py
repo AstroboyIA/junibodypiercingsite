@@ -173,6 +173,7 @@ def editar_produto(id):
             produto.preco = float(request.form['preco'])
             produto.estoque = int(request.form['estoque'])
             produto.tipo = request.form['tipo'].strip()
+            produto.categoria = request.form['categoria']
             produto.imagem_url = request.form['imagem_url'].strip()
 
             if produto.preco <= 0:

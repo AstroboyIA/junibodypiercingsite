@@ -30,11 +30,11 @@
     <!-- Mensagens -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        {% for category, message in messages %}
-        <div class="mb-6 p-4 rounded {% if category == 'error' %}bg-red-900 text-red-200{% else %}bg-green-900 text-green-200{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
+    {% for category, message in messages %}
+    <div class="mb-6 p-4 rounded {% if category == 'error' %}bg-red-900 text-red-200{% else %}bg-green-900 text-green-200{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
     {% endif %}
     {% endwith %}
 
@@ -80,6 +80,20 @@
                        min="0.01"
                        required
                        class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+            </div>
+
+            <div>
+                <label class="block text-gray-400 mb-2 text-sm">Categoria *</label>
+                <select name="categoria"
+                        required
+                        class="w-full p-3 rounded bg-gray-700 text-white border-none focus:ring-2 focus:ring-brand-gold">
+                    <option value="ouro" {% if produto.categoria==
+                    'ouro' %}selected{% endif %}>Ouro 18K</option>
+                    <option value="titanio" {% if produto.categoria==
+                    'titanio' %}selected{% endif %}>Titânio</option>
+                    <option value="zirconia" {% if produto.categoria==
+                    'zirconia' %}selected{% endif %}>Zircônia</option>
+                </select>
             </div>
 
             <div>

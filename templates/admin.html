@@ -2,104 +2,337 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel de Administração</title>
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - JuniPiercing</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Configuração Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            white: '#ffffff',
+                            dark: '#0f0f0f',
+                            gray: '#1a1a1a',
+                            gold: '#d4af37',
+                            goldlight: '#f3e5ab'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-brand-gray text-white">
-<div class="container mx-auto p-8">
-    <!-- Cabeçalho com botão de sair -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-serif text-brand-gold">Painel de Administração de Produtos</h1>
-        <a href="{{ url_for('logout') }}"
-           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors">
-            🚪 Sair
-        </a>
-    </div>
 
-    <!-- Mensagens de sucesso/erro -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="mb-4 p-4 rounded {% if category == 'error' %}bg-red-900 text-red-200{% else %}bg-green-900 text-green-200{% endif %}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+<body class="bg-gradient-to-br from-brand-dark via-brand-gray to-brand-dark text-white min-h-screen">
 
-    <!-- Formulário -->
-    <h2 class="text-2xl mb-4">Adicionar Novo Produto</h2>
-    <form method="POST" action="{{ url_for('admin') }}" class="bg-brand-dark p-6 rounded-lg mb-12">
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <input type="text" name="nome" placeholder="Nome do Produto" required
-                   class="p-3 rounded bg-gray-700 text-white border-none">
-            <input type="number" name="preco" placeholder="Preço (ex: 150.00)" step="0.01" required
-                   class="p-3 rounded bg-gray-700 text-white border-none">
-            <select name="categoria" required class="p-3 rounded bg-gray-700 text-white border-none">
-                <option value="">Selecione a Categoria</option>
-                <option value="ouro">Ouro 18K</option>
-                <option value="titanio">Titânio</option>
-                <option value="zirconia">Zircônia</option>
-            </select>
-            <input type="text" name="tipo" placeholder="Tipo (ex: 18K Gold)" required
-                   class="p-3 rounded bg-gray-700 text-white border-none">
-            <input type="text" name="imagem_url" placeholder="Caminho da Imagem (ex: images/anel.jpg)" required
-                   class="p-3 rounded bg-gray-700 text-white border-none">
-            <input type="number" name="estoque" placeholder="Estoque" required
-                   class="p-3 rounded bg-gray-700 text-white border-none">
-        </div>
-        <textarea name="descricao" placeholder="Descrição Detalhada" required
-                  class="w-full p-3 rounded bg-gray-700 text-white border-none mb-4"></textarea>
-
-        <button type="submit"
-                class="bg-brand-gold text-brand-dark font-bold py-3 px-6 rounded hover:bg-yellow-600 transition-colors">
-            Adicionar Produto
-        </button>
-    </form>
-
-    <!-- Lista de produtos -->
-    <h2 class="text-2xl mb-4">Produtos Atuais ({{ produtos | length }})</h2>
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-brand-dark rounded-lg">
-            <thead>
-            <tr class="text-left text-brand-gold border-b border-white/10">
-                <th class="p-4">ID</th>
-                <th class="p-4">Nome</th>
-                <th class="p-4">Preço</th>
-                <th class="p-4">Tipo</th>
-                <th class="p-4">Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for produto in produtos %}
-            <tr class="border-b border-white/5">
-                <td class="p-4">{{ produto.id }}</td>
-                <td class="p-4">{{ produto.nome }}</td>
-                <td class="p-4">R$ {{ "%.2f"|format(produto.preco) }}</td>
-                <td class="p-4">{{ produto.tipo }}</td>
-                <td class="p-4">
-                    <a href="{{ url_for('editar_produto', id=produto.id) }}"
-                       class="text-blue-400 hover:text-blue-300 mr-3 inline-block">✏️ Editar
+    <!-- Header -->
+    <header class="bg-brand-dark/90 backdrop-blur-sm border-b border-brand-gold/20 sticky top-0 z-50 shadow-xl">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-serif font-bold">
+                        <span class="text-white">Juni</span><span class="text-brand-gold">Piercing</span>
+                        <span class="text-gray-500 text-sm ml-3">Admin Panel</span>
+                    </h1>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <a href="{{ url_for('index') }}"
+                       class="text-gray-400 hover:text-brand-gold transition-colors text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Ver Site
                     </a>
+                    <a href="{{ url_for('logout') }}"
+                       class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-bold flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-                    <form method="POST"
-                          action="{{ url_for('excluir_produto', id=produto.id) }}"
-                          style="display:incline;"
-                          onsubmit="retunr confirm('⚠️ Tem certeza que deseja excluir \" {{ produto.nome }}\
-                    "? Esta ação não pode ser desfeita!');">
-                    <button type="submit"
-                            class="text-red-400 hover:text-red-300">
-                        🗑️ Excluir
-                    </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div class="container mx-auto px-6 py-8">
+
+        <!-- Mensagens de Feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for category, message in messages %}
+                <div class="p-4 rounded-lg border {% if category == 'error' %}bg-red-900/30 border-red-500 text-red-200{% else %}bg-green-900/30 border-green-500 text-green-200{% endif %} flex items-center gap-3 animate-pulse">
+                    {% if category == 'error' %}
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% else %}
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Cards de Estatísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-brand-gold to-yellow-600 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-semibold mb-1">Total de Produtos</p>
+                        <p class="text-3xl font-bold text-white">{{ produtos|length }}</p>
+                    </div>
+                    <div class="bg-white/20 rounded-full p-3">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-semibold mb-1">Ouro 18K</p>
+                        <p class="text-3xl font-bold text-white">{{ produtos|selectattr('categoria', 'equalto', 'ouro')|list|length }}</p>
+                    </div>
+                    <div class="bg-white/20 rounded-full p-3">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-100 text-sm font-semibold mb-1">Titânio</p>
+                        <p class="text-3xl font-bold text-white">{{ produtos|selectattr('categoria', 'equalto', 'titanio')|list|length }}</p>
+                    </div>
+                    <div class="bg-white/20 rounded-full p-3">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm font-semibold mb-1">Zircônia</p>
+                        <p class="text-3xl font-bold text-white">{{ produtos|selectattr('categoria', 'equalto', 'zirconia')|list|length }}</p>
+                    </div>
+                    <div class="bg-white/20 rounded-full p-3">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Adicionar Produto -->
+        <div class="bg-brand-gray/50 backdrop-blur-sm rounded-xl p-8 mb-8 border border-white/10 shadow-2xl">
+            <h2 class="text-2xl font-serif font-bold text-brand-gold mb-6 flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Adicionar Novo Produto
+            </h2>
+
+            <form method="POST" action="{{ url_for('admin') }}" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">Nome do Produto *</label>
+                        <input type="text"
+                               name="nome"
+                               placeholder="Ex: Argola Hélix Ouro 18K"
+                               required
+                               class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">Preço (R$) *</label>
+                        <input type="number"
+                               name="preco"
+                               placeholder="150.00"
+                               step="0.01"
+                               min="0.01"
+                               required
+                               class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">Categoria *</label>
+                        <select name="categoria"
+                                required
+                                class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                            <option value="">Selecione...</option>
+                            <option value="ouro">🥇 Ouro 18K</option>
+                            <option value="titanio">⚡ Titânio</option>
+                            <option value="zirconia">💎 Zircônia</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">Tipo *</label>
+                        <input type="text"
+                               name="tipo"
+                               placeholder="Ex: Argola, Labret, Barbell"
+                               required
+                               class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">Estoque *</label>
+                        <input type="number"
+                               name="estoque"
+                               placeholder="10"
+                               min="0"
+                               required
+                               class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-semibold mb-2">URL da Imagem *</label>
+                        <input type="text"
+                               name="imagem_url"
+                               placeholder="images/produto.jpg ou URL"
+                               required
+                               class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-sm font-semibold mb-2">Descrição Detalhada *</label>
+                    <textarea name="descricao"
+                              placeholder="Descreva o produto: material, características, tamanho, etc."
+                              required
+                              rows="3"
+                              class="w-full p-3 rounded-lg bg-brand-dark border border-white/10 text-white placeholder-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/50 transition-all"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="w-full md:w-auto bg-gradient-to-r from-brand-gold to-yellow-600 hover:from-yellow-600 hover:to-brand-gold text-brand-dark font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Adicionar Produto
+                </button>
+            </form>
+        </div>
+
+        <!-- Tabela de Produtos -->
+        <div class="bg-brand-gray/50 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+            <div class="p-6 border-b border-white/10">
+                <h2 class="text-2xl font-serif font-bold text-white flex items-center gap-3">
+                    <svg class="w-6 h-6 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Produtos Cadastrados
+                    <span class="text-brand-gold text-lg">({{ produtos|length }})</span>
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-brand-dark border-b border-white/10">
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">ID</th>
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">Imagem</th>
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">Nome</th>
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">Preço</th>
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">Categoria</th>
+                            <th class="p-4 text-left text-xs font-bold text-brand-gold uppercase tracking-wider">Estoque</th>
+                            <th class="p-4 text-center text-xs font-bold text-brand-gold uppercase tracking-wider">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for produto in produtos %}
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 text-gray-400 font-mono text-sm">{{ produto.id }}</td>
+                            <td class="p-4">
+                                <img src="{% if produto.imagem_url.startswith('http') %}{{ produto.imagem_url }}{% else %}{{ url_for('static', filename=produto.imagem_url) }}{% endif %}"
+                                     alt="{{ produto.nome }}"
+                                     class="w-16 h-16 object-cover rounded-lg shadow-md"
+                                     onerror="this.src='https://via.placeholder.com/64?text=Sem+Img'">
+                            </td>
+                            <td class="p-4">
+                                <p class="text-white font-semibold">{{ produto.nome }}</p>
+                                <p class="text-gray-500 text-xs">{{ produto.tipo }}</p>
+                            </td>
+                            <td class="p-4 text-brand-gold font-bold">R$ {{ "%.2f"|format(produto.preco) }}</td>
+                            <td class="p-4">
+                                {% if produto.categoria == 'ouro' %}
+                                <span class="bg-yellow-900/30 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold">🥇 Ouro</span>
+                                {% elif produto.categoria == 'titanio' %}
+                                <span class="bg-gray-700/30 text-gray-300 px-3 py-1 rounded-full text-xs font-bold">⚡ Titânio</span>
+                                {% else %}
+                                <span class="bg-purple-900/30 text-purple-400 px-3 py-1 rounded-full text-xs font-bold">💎 Zircônia</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold {% if produto.estoque > 5 %}bg-green-900/30 text-green-400{% elif produto.estoque > 0 %}bg-yellow-900/30 text-yellow-400{% else %}bg-red-900/30 text-red-400{% endif %}">
+                                    {{ produto.estoque }} un.
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex gap-2 justify-center">
+                                    <a href="{{ url_for('editar_produto', id=produto.id) }}"
+                                       class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+                                       title="Editar">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </a>
+                                    <form method="POST"
+                                          action="{{ url_for('excluir_produto', id=produto.id) }}"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('⚠️ Tem certeza que deseja excluir \"{{ produto.nome }}\"?');">
+                                        <button type="submit"
+                                                class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+                                                title="Excluir">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-</div>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
