@@ -1,0 +1,15 @@
+<form method="POST" action="{{ url_for('atualizar_carrinho') }}">
+    {% for item in itens_carrinho %}
+        <label for="qtd_{{ item.produto.id }}">{{ item.produto.nome }}</label>
+        <input 
+            type="number" 
+            name="{{ item.produto.id }}" 
+            id="qtd_{{ item.produto.id }}"
+            value="{{ item.quantidade }}" 
+            min="0" 
+            required>
+        <button type="submit" formaction="{{ url_for('remover_do_carrinho', produto_id=item.produto.id) }}">Remover</button>
+        <br>
+    {% endfor %}
+    <button type="submit">Atualizar Carrinho</button>
+</form>

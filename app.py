@@ -1,4 +1,5 @@
 import os
+import mercadopago
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user, current_user
@@ -33,7 +34,17 @@ def load_user(user_id):
 
 
 ADMIN_USER = os.getenv('ADMIN_USER', 'admin')
-ADMIN_PASS = os.getenv('ADMIN_PASS', '12345')
+ADMIN_PASS = os.getenv('ADMIN_PASS', 'astroboypassword')
+
+class Usuario(db.Model):
+    __tablename__ = 'usuario'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    
+    pedidos = db.Relationship('Pedido', backref='comprador', lazy=True)
+
+    def __repr__(self):
+        return f"Usuario('{self.nome}', '{self.email}')"
 
 
 class Produto(db.Model):
@@ -74,6 +85,109 @@ class ItemPedido(db.Model):
 
     def __repr__(self):
         return f"ItemPedido('{self.pedido_id}', '{self.produto_id}', '{self.quantidade}')"
+
+@app.route('/checkout', methods=['GET', 'POST'])
+login_required
+def checkout():
+    usuario_id_logado = current_user.id
+
+    if request.method == 'GET':
+        itens_carrinho = []
+        subtotal = 0
+
+        if 'carrinho' in session and session['carrinho']:
+
+            if not intans_carrinho:
+                return redirect(url_for('visualizar_carrinho'))
+
+        return render_template('checkout.html', itens_carrinho=intens_carrinho, subtotal=subtotal)
+
+
+                   '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
+                   '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
+                   '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
+
+@app.route('/carrinho/adicionar/<int:produto_id>', methods=['POST'])
+def adicionar_ao_carrinho(produto_id):
+    if 'carrinho' not in session:
+        session['carrinho'] = {}
+
+        quantidade = int(request.form.get('quantidade', 1))
+        carrinho = session['carrinho']
+
+        if str(produto_id) in carrinho:
+            carrinho[str(produto_id)] += quantidade
+        else:
+            carrinho[str(produto_id)] = quantidade
+
+        session.modified = True
+
+        return redirect(url_for('index'))
+
+@app.route('/carrinho')
+def visualizar_carrinho():
+    carrinho_data = []
+    subtotal = 0
+
+    if 'carrinho' in session and session['carrinho']:
+        ids_produtos = list(sessio['carrinho'].keys())
+        
+        ids_int = [int(p_id) for p_id in ids_produtos]
+
+        produtos = Produto.query.filter(Protudo.id.in_(ids_int)).all()
+
+        for produto in produtos:
+            quantidade = session ['carrinho'][str(produto.id)]
+            total_item = produto.preco * quantidade
+            subtotal += total_item
+
+            carrinho_data.append({
+                'produto': produto,
+                'quantidade': quantidade,
+                'total_item': total_item
+            })
+
+    return render_template('carrinho.html', carrinho=carrinho_data, subtotal=subtotal)
+
+@app.route('/carrinho/remover/<int:produto_id>', methods=['POST'])
+def remover_do_carrinho(produto_id):
+    str_id = str(produto_id)
+    if 'carrinho' in session and str_id in session['carrinho']:
+        carrinho = session['carrinho']
+
+        del carrinho[str_id]
+
+        session.modified = True
+
+        flash('Produto removido do carrinho com sucesso!', 'success')
+
+    return redirect(url_for('visualizar_carrinho'))
+
+@app.route('/carrinho/atualizar', methods=['POST'])
+def atualizar_carrinho():
+    if 'carrinho ' not in session:
+        return redirect(url_for('visualizar_carrinho'))
+
+        carrinho = session['carrinho']
+
+        for key, Value in request.form.items():
+            try:
+                produto_id = int(key)
+                nova_quantidade = int(value)
+                str_id = str(produto_id)
+
+                if str_id in carrinho:
+                    if nova_quantidade > 0:
+                        carrinho[str_id] = nova_quantidade
+                    else:
+                        del carrinho[str_id]
+
+            except ValueError:
+                pass
+
+        session.modified = True
+
+        return redirect(url_for('visualizar_carrinho'))
 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
