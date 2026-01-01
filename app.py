@@ -36,6 +36,8 @@ def load_user(user_id):
 ADMIN_USER = os.getenv('ADMIN_USER', 'admin')
 ADMIN_PASS = os.getenv('ADMIN_PASS', 'astroboypassword')
 
+# criação da classe usuario
+
 class Usuario(db.Model):
     __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key=True)
@@ -46,6 +48,7 @@ class Usuario(db.Model):
     def __repr__(self):
         return f"Usuario('{self.nome}', '{self.email}')"
 
+#criação da classe produto
 
 class Produto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,6 +62,8 @@ class Produto(db.Model):
 
     def __repr__(self):
         return f"Produto('{self.nome}', '{self.preco}')"
+
+#criação da classe pedido e itempedido
 
 class Pedido(db.Model):
     __tablename__ = 'pedido'
@@ -86,8 +91,10 @@ class ItemPedido(db.Model):
     def __repr__(self):
         return f"ItemPedido('{self.pedido_id}', '{self.produto_id}', '{self.quantidade}')"
 
+#chegagem de login
+
 @app.route('/checkout', methods=['GET', 'POST'])
-login_required
+@login_required
 def checkout():
     usuario_id_logado = current_user.id
 
@@ -102,7 +109,60 @@ def checkout():
 
         return render_template('checkout.html', itens_carrinho=intens_carrinho, subtotal=subtotal)
 
+    if request.method == 'POST':
+        if 'carrinho' not in session or not session['carrinho']:
+            return redirect(url_for('visualizar_carrinho'))
+            
+            try:
+                carrinho=session['carrinho']
+                total_pedido = 0
 
+
+                ids_produtos = [int(p_id) for p_id in carrinho.keys()]
+                produtos_db = Produto.query.filter(Produto.id.in_(ids_produtos)).all()
+                produtos_map = {p.id: p for p in produtos_db}
+
+
+                novo_produto = Pedido(
+                    usuario_id=usuario_id_logado,
+                    status='Aguardando Pagamento',
+                    total=0.0
+                )
+                db.session.add(novo_pedido)
+                db.session.flush()
+
+                itens_a_adicionar = []
+
+                for p_id_str, quantidade in carrinho.itens():
+                    produto_id = int(p_id_str)
+                    produto = produtos_map.get(produto_id)
+
+                    if not produto or produto.estoque < quantidade:
+                        raise Exception("Erro de estoque ou produto.")
+
+                    total_item = produto.preco * quantidade
+                    total_pedido += total_item
+
+                    item_pedido = ItemPedido(
+                        pedido_id=novo_pedido.id,
+                        produto_id=produto.id,
+                        quantidade=quantidade,
+                        preco_unitario=produto.preco
+                    )
+                    itens_a_adicionar.append(item_pedido)
+
+                    produto.estoque -= quantidade
+
+                novo_pedido.total = total_pedido
+                db.session.add_all(itens_a_adicionar)
+                db.session.commit()
+
+                session.pop('carrinho', None)
+                retun redirect(url_for('confirmacao_pedido', pedido_id=novo_pedido.id))
+
+            except Exception as e:
+                db.session.rallback()
+                retun redirect(url_for('visualizar_carrinho'))
                    '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
                    '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
                    '''!!!!!!!!!!!!!!!!!!!!! PAREI AQUI !!!!!!!!!!!!!!!!!!!'''
